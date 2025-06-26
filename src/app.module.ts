@@ -6,7 +6,7 @@ import { PostsModule } from './posts/posts.module';
 import { ProjectsModule } from './projects/projects.module';
 import { AppConfig } from './app.config';
 import { ZodConfigModule, dotEnvLoader } from 'nest-zod-config';
-// import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,6 +19,7 @@ import { ZodConfigModule, dotEnvLoader } from 'nest-zod-config';
       loader: [dotEnvLoader()],
       isGlobal: true
     }),
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
