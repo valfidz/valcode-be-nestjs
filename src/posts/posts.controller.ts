@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { Post as PostModel } from '@prisma/client';
+import { Public } from '@/auth/public';
 
 @Controller('posts')
 export class PostsController {
@@ -11,6 +12,7 @@ export class PostsController {
     return this.postService.post({ id: id });
   }
 
+  @Public()
   @Get('feed')
   async getPublishedPosts(): Promise<PostModel[]> {
     return this.postService.posts({

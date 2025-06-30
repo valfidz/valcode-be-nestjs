@@ -7,6 +7,8 @@ import { ProjectsModule } from './projects/projects.module';
 import { AppConfig } from './app.config';
 import { ZodConfigModule, dotEnvLoader } from 'nest-zod-config';
 import { AuthModule } from './auth/auth.module';
+import { AuthGuard } from './auth/auth.guard';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -19,9 +21,16 @@ import { AuthModule } from './auth/auth.module';
       loader: [dotEnvLoader()],
       isGlobal: true
     }),
-    AuthModule
+    AuthModule,
+    JwtModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: 'APP_GUARD',
+      useClass: AuthGuard
+    }
+  ],
 })
 export class AppModule {}

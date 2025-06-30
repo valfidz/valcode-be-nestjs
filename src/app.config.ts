@@ -7,6 +7,7 @@ const appConfigSchema = z.object({
   JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.number(),
+  SALT_ROUNDS: z.coerce.number().default(10)
 });
 
 export class AppConfig extends Config(appConfigSchema) {}
