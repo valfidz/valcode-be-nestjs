@@ -7,6 +7,7 @@ import { Public } from '@/auth/public';
 export class PostsController {
   constructor(private readonly postService: PostsService) {}
 
+  @Public()
   @Get('post/:id')
   async getPostById(@Param('id') id: string): Promise<PostModel | null> {
     return this.postService.post({ id: id });
@@ -20,6 +21,7 @@ export class PostsController {
     });
   }
 
+  @Public()
   @Get('filtered-posts/:searchString')
   async getFilteredPosts(
     @Param('searchString') searchString: string,

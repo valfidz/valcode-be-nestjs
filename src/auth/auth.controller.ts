@@ -17,6 +17,7 @@ import { AuthGuard } from './auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { User as UserModel } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { Public } from './public';
 
 @Controller('auth')
 export class AuthController {
@@ -25,6 +26,7 @@ export class AuthController {
     private readonly jwtService: JwtService,
   ) {}
 
+  @Public()
   @Post('login')
   async loginUser(
     @Body() userData: { email: string; password: string },

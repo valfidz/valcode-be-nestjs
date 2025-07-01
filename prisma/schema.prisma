@@ -26,6 +26,7 @@ model User {
 model Post {
   id        String      @default(uuid()) @id
   title     String
+  slug      String?      @unique
   content   String?
   published Boolean? @default(false)
   author    User?    @relation(fields: [authorId], references: [id])
@@ -35,6 +36,7 @@ model Post {
 model Project {
   id          String   @default(uuid()) @id
   title       String
+  slug        String?   @unique
   description String?
   stacks      String[]
   content     String?

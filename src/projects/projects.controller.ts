@@ -1,34 +1,76 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
+import { Project as ProjectModel } from '@prisma/client';
+import { Public } from '@/auth/public';
 
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
-  @Post()
-  create(@Body() createProjectDto: CreateProjectDto) {
-    return this.projectsService.create(createProjectDto);
+  @Public()
+  @Get('project/:id')
+  async getProjectById(@Param('id') id: string): Promise<ProjectModel | null> {
+    return this.projectsService.getOneProject({ id: id});
   }
 
-  @Get()
-  findAll() {
-    return this.projectsService.findAll();
+  @Public()
+  @Get('all')
+  async getAllProjects(): Promise<ProjectModel[]> {
+    return this.projectsService.getAllProjects({
+      where: { published: true }
+    });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.projectsService.findOne(+id);
+  @Public()
+  @Get('filtered-projects/:searchString')
+  async getFilteredProjects(
+    @Param('searchString') searchString: string,
+  ): Promise<ProjectModel[]> {
+    return this.projectsService.getAllProjects({
+      where: {
+        OR: [
+          {
+            title: { contains: searchString },
+          },
+          {
+            description: { contains: searchString },
+          },
+          {
+            content: { contains: searchString },
+          }
+        ],
+      },
+    });
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectsService.update(+id, updateProjectDto);
+  @Post('project')
+  async createProject(
+    @Body() projectData: { title: string; description: string; content: string; stacks: string[]; authorEmail: string },
+  ): Promise<ProjectModel> {
+    const { title, description, content, stacks, authorEmail } = projectData;
+
+    return this.projectsService.createProject({
+      title,
+      description,
+      content,
+      stacks,
+      author: {
+        connect: { email: authorEmail }
+      }
+    });
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.projectsService.remove(+id);
+  @Put('publish/:id')
+  async publishProject(@Param('id') id: string): Promise<ProjectModel> {
+    return this.projectsService.updateProject({
+      where: { id: id },
+      data: { published: true },
+    });
   }
+
+  @Delete('project/:id')
+  async deleteProject(@Param('id') id: string): Promise<ProjectModel> {
+    return this.projectsService.deleteProject({ id: id });
+  }
+  
 }
